@@ -45,13 +45,13 @@ uniform_float MaxExposure
     display_name = "Maximum Exposure";
 }
 
-uniform_float InteriorMinExposure
+uniform_float MinExposure
 {
-    default = 0.035;
+    default = 0.03;
     min = 0.0;
     max = 1.0;
     step = 0.005;
-    display_name = "Interior Minimum Exposure";
+    display_name = "Minimum Exposure";
 }
 
 uniform_float LinearAngle
@@ -90,7 +90,7 @@ shared
     float GetAverageLuminance()
     {
         float x = omw_GetEyeAdaptation();
-        x = clamp(x, InteriorMinExposure, MaxExposure);
+        x = clamp(x, MinExposure, MaxExposure);
         return x;
     }
 }
@@ -152,6 +152,6 @@ fragment blitz
 technique {
     passes = blitz;
     description = "HDR tonemapping + contrast/saturation.";
-    version = "0.7";
+    version = "0.8";
     hdr = true;
 }

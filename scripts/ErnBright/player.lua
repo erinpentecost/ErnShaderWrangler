@@ -24,8 +24,6 @@ local async = require("openmw.async")
 local shader = postprocessing.load("bright")
 shader:enable()
 
-local inExterior = false
-
 local disableShaderAtFrameDuration = 1.0 / settings:get('disableAt')
 local enableShaderAtFrameDuration = 1.0 / settings:get('enableAt')
 
