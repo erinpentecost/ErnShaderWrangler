@@ -121,9 +121,6 @@ fragment blitz
 
     void main()
     {
-        //if (!omw.isInterior)
-        //    discard;
-
         float4 scene = omw_GetLastShader(omw_TexCoord);
 
         float averageLuminance = GetAverageLuminance();
@@ -154,7 +151,7 @@ fragment blitz
 
 technique {
     passes = blitz;
-    description = "Interior-only HDR tonemapping + contrast/saturation.";
+    description = "HDR tonemapping + contrast/saturation.";
     version = "0.7";
     hdr = true;
 }

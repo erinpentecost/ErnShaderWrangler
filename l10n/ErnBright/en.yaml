@@ -1,0 +1,9 @@
+name: "ErnBright"
+description: "Control the brightness shader."
+settings: "Settings"
+
+disableAtName: "Disable at FPS"
+disableAtDesc: "Disable the shader if your FPS drops below this target."
+
+enableAtName: "Enable at FPS"
+enableAtDesc: "Enable the shader if your FPS climbs above this target."
