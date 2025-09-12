@@ -1,7 +1,6 @@
-# Bright
+# Shader Wrangler
 
-This is a paired-down `tonemap` shader for OpenMW that is enabled or disabled automatically depending on your FPS.
-
+This is an OpenMW that will dynamically enable or disable shaders based on FPS performance. It ships with a paired-down tonemap shader that works on GLES devices.
 
 ## Installing
 
@@ -19,8 +18,7 @@ If you're using this mod, you're probably playing OpenMW on a limited-resource d
 ```ini
 [Post Processing]
 enabled = true
-transparent postpass = false
 chain =
 ```
 
-This disables always-on post-processing shaders.
+This disables always-on post-processing shaders, but enables post processing to work for dynamically enabled shaders.
