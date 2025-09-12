@@ -19,6 +19,8 @@ local interfaces = require("openmw.interfaces")
 local storage = require("openmw.storage")
 local MOD_NAME = "ErnBright"
 
+local enabledOptions = { "fps   ", "never ", "always" }
+
 interfaces.Settings.registerPage {
     key = MOD_NAME,
     l10n = MOD_NAME,
@@ -56,6 +58,36 @@ interfaces.Settings.registerGroup {
                 integer = true,
             },
         },
+        {
+            key = "interior",
+            name = "interiorName",
+            description = "interiorDescription",
+            argument = { items = enabledOptions, l10n = MOD_NAME },
+            default = enabledOptions[1],
+            renderer = "select",
+        },
+        {
+            key = "exterior",
+            name = "exteriorName",
+            description = "exteriorDescription",
+            argument = { items = enabledOptions, l10n = MOD_NAME },
+            default = enabledOptions[1],
+            renderer = "select",
+        },
+        {
+            key = "interiorShaders",
+            name = "interiorShadersName",
+            description = "interiorShadersDescription",
+            default = 'bright',
+            renderer = 'textLine',
+        },
+        {
+            key = "exteriorShaders",
+            name = "exteriorShadersName",
+            description = "exteriorShadersDescription",
+            default = 'bright',
+            renderer = 'textLine',
+        }
     }
 }
 

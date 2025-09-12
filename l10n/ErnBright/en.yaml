@@ -7,3 +7,19 @@ disableAtDesc: "Disable the shader if your FPS drops below this target."
 
 enableAtName: "Enable at FPS"
 enableAtDesc: "Enable the shader if your FPS climbs above this target."
+
+auto: "fps"
+never: "never   "
+always: "always  "
+
+exteriorName: "Use in Exteriors"
+exteriorDescription: "Choose the conditions that the shader will enable in exteriors."
+
+interiorName: "Use in Interiors"
+interiorDescription: "Choose the conditions that the shader will enable in interiors."
+
+exteriorShadersName: "Exterior Shaders"
+exteriorShadersDescription: "Choose the shaders to apply in exteriors. Delimit with commas."
+
+interiorShadersName: "Interior Shaders"
+interiorShadersDescription: "Choose the shaders to apply in interiors. Delimit with commas."

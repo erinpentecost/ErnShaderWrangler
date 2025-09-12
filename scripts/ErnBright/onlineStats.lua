@@ -54,7 +54,9 @@ function StatsFunctions.add(self, sample)
     if self.active.count > self.samplesPerWindow then
         -- the active tracker is full. time to swap.
         self.active = self.inactive
-        self.inactive = newWindow()
+        self.inactive.count = 0
+        self.inactive.mean = 0
+        self.inactive.m2 = 0
     end
 
     -- always add a sample to the current window.

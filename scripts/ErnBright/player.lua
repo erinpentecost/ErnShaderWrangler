@@ -19,35 +19,56 @@ local postprocessing = require('openmw.postprocessing')
 local core = require('openmw.core')
 local onlineStats = require("scripts.ErnBright.onlineStats")
 local settings = require("scripts.ErnBright.settings")
+local shader = require("scripts.ErnBright.shader")
+local pself = require("openmw.self")
 local async = require("openmw.async")
 
-local shader = postprocessing.load("bright")
-shader:enable()
+local interiorShaders = {}
+local exteriorShaders = {}
 
-local disableShaderAtFrameDuration = 1.0 / settings:get('disableAt')
-local enableShaderAtFrameDuration = 1.0 / settings:get('enableAt')
+local function loadShaders(nameCSV)
+    local out = {}
+    for elem in string.gmatch(nameCSV, "[^,]+") do
+        print("Loading shader " .. tostring(elem) .. ".")
+        table.insert(out, shader.NewShader(elem))
+    end
+    return out
+end
 
-settings:subscribe(async:callback(function(_, key)
-    print("Settings changed.")
+local function enableShaders(shaderCollection, enable)
+    for _, s in ipairs(shaderCollection) do
+        s:enable(enable)
+    end
+end
+
+local disableShaderAtFrameDuration = 0
+local enableShaderAtFrameDuration = 0
+local interiorCondition = ""
+local exteriorCondition = ""
+
+-- Ensure settings are re-applied.
+local function applySettings()
     disableShaderAtFrameDuration = 1.0 / settings:get('disableAt')
     enableShaderAtFrameDuration = 1.0 / settings:get('enableAt')
-end))
+    interiorCondition = settings:get('interior')
+    exteriorCondition = settings:get('exterior')
 
-local enabled = true
+    enableShaders(interiorShaders, false)
+    enableShaders(exteriorShaders, false)
+    interiorShaders = loadShaders(settings:get('interiorShaders'))
+    exteriorShaders = loadShaders(settings:get('exteriorShaders'))
+end
+
+applySettings()
+settings:subscribe(async:callback(function(_, key)
+    print("Settings changed.")
+    applySettings()
+end))
 
 local frameDuration = onlineStats.NewSampleCollection(180)
 
-local function disableShader(dt)
-    enabled = false
-    shader:disable()
-end
-
-local function enableShader(dt)
-    enabled = true
-    shader:enable()
-end
-
-enableShader(0)
+local enabled = false
+local inExterior = false
 
 local function onFrame(dt)
     -- don't do anything while paused.
@@ -55,9 +76,50 @@ local function onFrame(dt)
         return
     end
 
-    local frameDur = core.getRealFrameDuration()
     -- update running average
+    local frameDur = core.getRealFrameDuration()
     frameDuration:add(frameDur)
+
+    -- We moved between interior and exterior.
+    if pself.cell.isExterior ~= inExterior then
+        -- Ensure the old set of shaders is disabled,
+        -- and then optimistically enable the new shaders.
+        inExterior = pself.cell.isExterior
+        if inExterior then
+            enableShaders(interiorShaders, false)
+            enableShaders(exteriorShaders, true)
+        else
+            enableShaders(exteriorShaders, false)
+            enableShaders(interiorShaders, true)
+        end
+        enabled = true
+        return
+    end
+
+    -- Absolutist overrides.
+    if pself.cell.isExterior then
+        if exteriorCondition == "never" then
+            enableShaders(exteriorShaders, false)
+            enabled = false
+            return
+        elseif exteriorCondition == "always" then
+            enabled = true
+            enableShaders(exteriorShaders, true)
+            return
+        end
+    else
+        if interiorCondition == "never" then
+            enabled = false
+            enableShaders(interiorShaders, false)
+            return
+        elseif interiorCondition == "always" then
+            enabled = true
+            enableShaders(interiorShaders, true)
+            return
+        end
+    end
+
+    -- We're going to dynamically enable the shader now.
     local stats = frameDuration:calculate()
     if stats == nil then
         return
@@ -74,22 +136,32 @@ local function onFrame(dt)
 
     -- if FPS drops below 20, turn the shader off.
     if (stats.mean >= disableShaderAtFrameDuration) and enabled then
-        print("Disabling bright shader. FrameDuration: " ..
+        print("Disabling shaders. FrameDuration: " ..
             string.format("%.3f", stats.mean) ..
             " Threshold: " ..
             string.format("%.3f", enableShaderAtFrameDuration) ..
             " StdDev: " .. string.format("%.3f", math.sqrt(stats.variance)))
-        disableShader(frameDur)
+        if pself.cell.isExterior then
+            enableShaders(exteriorShaders, false)
+        else
+            enableShaders(interiorShaders, false)
+        end
+        enabled = false
         return
     end
     if (stats.mean <= enableShaderAtFrameDuration) and not enabled then
         -- we are fast and not using the shader, so enable it
-        print("Enabling bright shader. FrameDuration: " ..
+        print("Enabling shaders. FrameDuration: " ..
             string.format("%.3f", stats.mean) ..
             " Threshold: " ..
             string.format("%.3f", enableShaderAtFrameDuration) ..
             " StdDev: " .. string.format("%.3f", math.sqrt(stats.variance)))
-        enableShader(frameDur)
+        if pself.cell.isExterior then
+            enableShaders(exteriorShaders, true)
+        else
+            enableShaders(interiorShaders, true)
+        end
+        enabled = true
         return
     end
 end
