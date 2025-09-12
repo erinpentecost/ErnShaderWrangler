@@ -1,5 +1,5 @@
 --[[
-ErnBright for OpenMW.
+ErnShaderWrangler for OpenMW.
 Copyright (C) 2025 Erin Pentecost
 
 This program is free software: you can redistribute it and/or modify

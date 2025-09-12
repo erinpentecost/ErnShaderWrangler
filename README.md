@@ -4,13 +4,13 @@ This is an OpenMW that will dynamically enable or disable shaders based on FPS p
 
 ## Installing
 
-Download the [latest version here](https://github.com/erinpentecost/ErnBright/archive/refs/heads/main.zip).
+Download the [latest version here](https://github.com/erinpentecost/ErnShaderWrangler/archive/refs/heads/main.zip).
 
 Extract to your `mods/` folder. In your `openmw.cfg` file, add these lines in the correct spots:
 
 ```ini
-data="/wherevermymodsare/mods/ErnBright-main"
-content=ErnBright.omwscripts
+data="/wherevermymodsare/mods/ErnShaderWrangler-main"
+content=ErnShaderWrangler.omwscripts
 ```
 
 If you're using this mod, you're probably playing OpenMW on a limited-resource device. If so, make these changes to your `settings.cfg`:

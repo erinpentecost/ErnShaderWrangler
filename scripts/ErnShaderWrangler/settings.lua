@@ -1,5 +1,5 @@
 --[[
-ErnBright for OpenMW.
+ErnShaderWrangler for OpenMW.
 Copyright (C) 2025 Erin Pentecost
 
 This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ]]
 local interfaces = require("openmw.interfaces")
 local storage = require("openmw.storage")
-local MOD_NAME = "ErnBright"
+local MOD_NAME = "ErnShaderWrangler"
 
 local enabledOptions = { "fps", "never", "always" }
 

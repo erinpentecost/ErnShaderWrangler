@@ -1,5 +1,5 @@
-name: "ErnBright"
-description: "Control the brightness shader."
+name: "ErnShaderWrangler"
+description: "Dynamically toggle your shaders."
 settings: "Settings"
 
 disableAtName: "Disable at FPS"

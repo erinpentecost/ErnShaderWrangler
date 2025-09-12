@@ -1,5 +1,5 @@
 --[[
-ErnBright for OpenMW.
+ErnShaderWrangler for OpenMW.
 Copyright (C) 2025 Erin Pentecost
 
 This program is free software: you can redistribute it and/or modify
@@ -16,10 +16,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ]]
 local core = require('openmw.core')
-local onlineStats = require("scripts.ErnBright.onlineStats")
-local log = require("scripts.ErnBright.log")
-local settings = require("scripts.ErnBright.settings")
-local shader = require("scripts.ErnBright.shader")
+local onlineStats = require("scripts.ErnShaderWrangler.onlineStats")
+local log = require("scripts.ErnShaderWrangler.log")
+local settings = require("scripts.ErnShaderWrangler.settings")
+local shader = require("scripts.ErnShaderWrangler.shader")
 local pself = require("openmw.self")
 local async = require("openmw.async")
 
