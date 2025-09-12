@@ -59,6 +59,18 @@ interfaces.Settings.registerGroup {
             },
         },
         {
+            key = "stddev",
+            renderer = "number",
+            name = "stddevName",
+            description = "stddevDesc",
+            default = 0.0005,
+            argument = {
+                min = 0,
+                max = 10,
+                integer = false,
+            },
+        },
+        {
             key = "interior",
             name = "interiorName",
             description = "interiorDescription",
@@ -87,7 +99,12 @@ interfaces.Settings.registerGroup {
             description = "exteriorShadersDescription",
             default = 'bright',
             renderer = 'textLine',
-        }
+        }, {
+        key = "enableLogging",
+        name = "enableLoggingName",
+        default = false,
+        renderer = "checkbox"
+    }
     }
 }
 

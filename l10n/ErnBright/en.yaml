@@ -8,6 +8,9 @@ disableAtDesc: "Disable the shader if your FPS drops below this target."
 enableAtName: "Enable at FPS"
 enableAtDesc: "Enable the shader if your FPS climbs above this target."
 
+stddevName: "Frame Duration Std Dev Threshold"
+stddevDesc: "Don't change shaders if the frame duration standard deviation is over this threshold. This allows you to ignore sporadic lag."
+
 auto: "fps"
 never: "never   "
 always: "always  "
@@ -23,3 +26,5 @@ exteriorShadersDescription: "Choose the shaders to apply in exteriors. Delimit w
 
 interiorShadersName: "Interior Shaders"
 interiorShadersDescription: "Choose the shaders to apply in interiors. Delimit with commas."
+
+enableLoggingName: "Enable Logging"

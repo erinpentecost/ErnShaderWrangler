@@ -151,7 +151,7 @@ fragment blitz
 
 technique {
     passes = blitz;
-    description = "HDR tonemapping + contrast/saturation.";
+    description = "GLES HDR tonemapping + contrast/saturation.";
     version = "0.8";
     hdr = true;
 }

@@ -15,9 +15,9 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ]]
-local postprocessing = require('openmw.postprocessing')
 local core = require('openmw.core')
 local onlineStats = require("scripts.ErnBright.onlineStats")
+local log = require("scripts.ErnBright.log")
 local settings = require("scripts.ErnBright.settings")
 local shader = require("scripts.ErnBright.shader")
 local pself = require("openmw.self")
@@ -41,8 +41,9 @@ local function enableShaders(shaderCollection, enable)
     end
 end
 
-local disableShaderAtFrameDuration = 0
-local enableShaderAtFrameDuration = 0
+local frameDurationVarianceThreshold = 0.0
+local disableShaderAtFrameDuration = 0.0
+local enableShaderAtFrameDuration = 0.0
 local interiorCondition = ""
 local exteriorCondition = ""
 
@@ -52,6 +53,11 @@ local inExterior = nil
 local function applySettings()
     disableShaderAtFrameDuration = 1.0 / settings:get('disableAt')
     enableShaderAtFrameDuration = 1.0 / settings:get('enableAt')
+    frameDurationVarianceThreshold = math.pow(settings:get('stddev'), 2)
+
+    -- when set to 2, got 0.25
+    print("frameDurationVarianceThreshold=" .. tostring(frameDurationVarianceThreshold))
+
     interiorCondition = settings:get('interior')
     exteriorCondition = settings:get('exterior')
 
@@ -74,8 +80,6 @@ settings:subscribe(async:callback(function(_, key)
 end))
 
 local frameDuration = onlineStats.NewSampleCollection(180)
-
---local enabled = false
 
 local function onFrame(dt)
     -- don't do anything while paused.
@@ -104,21 +108,17 @@ local function onUpdate(dt)
     -- Absolutist overrides.
     if inExterior then
         if exteriorCondition == "never" then
-            --enabled = false
             enableShaders(exteriorShaders, false)
             return
         elseif exteriorCondition == "always" or swapped then
-            --enabled = true
             enableShaders(exteriorShaders, true)
             return
         end
     else
         if interiorCondition == "never" then
-            --enabled = false
             enableShaders(interiorShaders, false)
             return
         elseif interiorCondition == "always" or swapped then
-            --enabled = true
             enableShaders(interiorShaders, true)
             return
         end
@@ -130,43 +130,50 @@ local function onUpdate(dt)
         return
     end
 
-    if stats.variance > 2.5e-05 then
+    if stats.variance > frameDurationVarianceThreshold then
         -- stdev over 0.015 is variance > 0.000225
         -- this is basically +or- .02 seconds per frame
-        --print("Detected FPS instability. FrameDuration: " ..
-        --    string.format("%.3f", stats.mean) .. " StdDev: " .. string.format("%.3f", math.sqrt(stats.variance)))
+        log("stdev", function()
+            return "FPS unstable. Frame Duration StdDev: " ..
+                string.format("%.3f", math.sqrt(stats.variance)) .. " (" ..
+                string.format("%.3f", math.sqrt(frameDurationVarianceThreshold)) .. ")"
+        end)
         -- fps is too wild. do nothing.
         return
     end
 
     -- if FPS drops below 20, turn the shader off.
     if (stats.mean >= disableShaderAtFrameDuration) then
-        --[[print("Disabling shaders. FrameDuration: " ..
-            string.format("%.3f", stats.mean) ..
-            " Threshold: " ..
-            string.format("%.3f", enableShaderAtFrameDuration) ..
-            " StdDev: " .. string.format("%.3f", math.sqrt(stats.variance)))]]
+        log("disable", function()
+            return "Disabling shaders. Frame Duration Mean: " ..
+                string.format("%.3f", stats.mean) ..
+                " (" ..
+                string.format("%.3f", disableShaderAtFrameDuration) ..
+                ") StdDev: " .. string.format("%.3f", math.sqrt(stats.variance)) .. " (" ..
+                string.format("%.3f", math.sqrt(frameDurationVarianceThreshold)) .. ")"
+        end)
         if inExterior then
             enableShaders(exteriorShaders, false)
         else
             enableShaders(interiorShaders, false)
         end
-        --enabled = false
         return
     end
     if (stats.mean <= enableShaderAtFrameDuration) then
         -- we are fast and not using the shader, so enable it
-        --[[print("Enabling shaders. FrameDuration: " ..
-            string.format("%.3f", stats.mean) ..
-            " Threshold: " ..
-            string.format("%.3f", enableShaderAtFrameDuration) ..
-            " StdDev: " .. string.format("%.3f", math.sqrt(stats.variance)))]]
+        log("enable", function()
+            return "Enabling shaders. Frame Duration Mean: " ..
+                string.format("%.3f", stats.mean) ..
+                " (" ..
+                string.format("%.3f", enableShaderAtFrameDuration) ..
+                ") StdDev: " .. string.format("%.3f", math.sqrt(stats.variance)) .. " (" ..
+                string.format("%.3f", math.sqrt(frameDurationVarianceThreshold)) .. ")"
+        end)
         if inExterior then
             enableShaders(exteriorShaders, true)
         else
             enableShaders(interiorShaders, true)
         end
-        --enabled = true
         return
     end
 end
