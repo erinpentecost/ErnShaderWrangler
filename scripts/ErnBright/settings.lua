@@ -19,7 +19,7 @@ local interfaces = require("openmw.interfaces")
 local storage = require("openmw.storage")
 local MOD_NAME = "ErnBright"
 
-local enabledOptions = { "fps   ", "never ", "always" }
+local enabledOptions = { "fps", "never", "always" }
 
 interfaces.Settings.registerPage {
     key = MOD_NAME,

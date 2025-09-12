@@ -46,6 +46,8 @@ local enableShaderAtFrameDuration = 0
 local interiorCondition = ""
 local exteriorCondition = ""
 
+local inExterior = nil
+
 -- Ensure settings are re-applied.
 local function applySettings()
     disableShaderAtFrameDuration = 1.0 / settings:get('disableAt')
@@ -55,8 +57,14 @@ local function applySettings()
 
     enableShaders(interiorShaders, false)
     enableShaders(exteriorShaders, false)
+    print("Interior Shaders:" .. tostring(settings:get('interiorShaders')))
     interiorShaders = loadShaders(settings:get('interiorShaders'))
+    print("Exterior Shaders:" .. tostring(settings:get('exteriorShaders')))
     exteriorShaders = loadShaders(settings:get('exteriorShaders'))
+
+    -- even though this is not a setting, we reset it to nil
+    -- so the shaders will re-apply later.
+    inExterior = nil
 end
 
 applySettings()
@@ -67,8 +75,7 @@ end))
 
 local frameDuration = onlineStats.NewSampleCollection(180)
 
-local enabled = false
-local inExterior = false
+--local enabled = false
 
 local function onFrame(dt)
     -- don't do anything while paused.
@@ -79,41 +86,39 @@ local function onFrame(dt)
     -- update running average
     local frameDur = core.getRealFrameDuration()
     frameDuration:add(frameDur)
+end
 
+local function onUpdate(dt)
     -- We moved between interior and exterior.
-    if pself.cell.isExterior ~= inExterior then
-        -- Ensure the old set of shaders is disabled,
-        -- and then optimistically enable the new shaders.
+    local swapped = pself.cell.isExterior ~= inExterior or inExterior == nil
+    if swapped then
+        -- Ensure the old set of shaders is disabled.
         inExterior = pself.cell.isExterior
         if inExterior then
             enableShaders(interiorShaders, false)
-            enableShaders(exteriorShaders, true)
         else
             enableShaders(exteriorShaders, false)
-            enableShaders(interiorShaders, true)
         end
-        enabled = true
-        return
     end
 
     -- Absolutist overrides.
-    if pself.cell.isExterior then
+    if inExterior then
         if exteriorCondition == "never" then
+            --enabled = false
             enableShaders(exteriorShaders, false)
-            enabled = false
             return
-        elseif exteriorCondition == "always" then
-            enabled = true
+        elseif exteriorCondition == "always" or swapped then
+            --enabled = true
             enableShaders(exteriorShaders, true)
             return
         end
     else
         if interiorCondition == "never" then
-            enabled = false
+            --enabled = false
             enableShaders(interiorShaders, false)
             return
-        elseif interiorCondition == "always" then
-            enabled = true
+        elseif interiorCondition == "always" or swapped then
+            --enabled = true
             enableShaders(interiorShaders, true)
             return
         end
@@ -135,39 +140,40 @@ local function onFrame(dt)
     end
 
     -- if FPS drops below 20, turn the shader off.
-    if (stats.mean >= disableShaderAtFrameDuration) and enabled then
-        print("Disabling shaders. FrameDuration: " ..
+    if (stats.mean >= disableShaderAtFrameDuration) then
+        --[[print("Disabling shaders. FrameDuration: " ..
             string.format("%.3f", stats.mean) ..
             " Threshold: " ..
             string.format("%.3f", enableShaderAtFrameDuration) ..
-            " StdDev: " .. string.format("%.3f", math.sqrt(stats.variance)))
-        if pself.cell.isExterior then
+            " StdDev: " .. string.format("%.3f", math.sqrt(stats.variance)))]]
+        if inExterior then
             enableShaders(exteriorShaders, false)
         else
             enableShaders(interiorShaders, false)
         end
-        enabled = false
+        --enabled = false
         return
     end
-    if (stats.mean <= enableShaderAtFrameDuration) and not enabled then
+    if (stats.mean <= enableShaderAtFrameDuration) then
         -- we are fast and not using the shader, so enable it
-        print("Enabling shaders. FrameDuration: " ..
+        --[[print("Enabling shaders. FrameDuration: " ..
             string.format("%.3f", stats.mean) ..
             " Threshold: " ..
             string.format("%.3f", enableShaderAtFrameDuration) ..
-            " StdDev: " .. string.format("%.3f", math.sqrt(stats.variance)))
-        if pself.cell.isExterior then
+            " StdDev: " .. string.format("%.3f", math.sqrt(stats.variance)))]]
+        if inExterior then
             enableShaders(exteriorShaders, true)
         else
             enableShaders(interiorShaders, true)
         end
-        enabled = true
+        --enabled = true
         return
     end
 end
 
 return {
     engineHandlers = {
-        onFrame = onFrame
+        onFrame = onFrame,
+        onUpdate = onUpdate
     }
 }
