@@ -75,7 +75,7 @@ interfaces.Settings.registerGroup {
             name = "interiorName",
             description = "interiorDescription",
             argument = { items = enabledOptions, l10n = MOD_NAME },
-            default = enabledOptions[1],
+            default = enabledOptions[3],
             renderer = "select",
         },
         {
