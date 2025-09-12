@@ -1,6 +1,6 @@
 # Shader Wrangler
 
-This is an OpenMW that will dynamically enable or disable shaders based on FPS performance. It ships with a paired-down tonemap shader that works on GLES devices.
+This is an OpenMW mod that will dynamically enable or disable shaders based on FPS performance. It ships with a paired-down tonemap shader that works on GLES devices.
 
 ## Installing
 
