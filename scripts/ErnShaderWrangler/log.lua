@@ -20,7 +20,7 @@ local settings = require("scripts.ErnShaderWrangler.settings")
 local lastLoggedMessageCategory = nil
 
 local function Log(category, message)
-    if not settings.enableLogging then
+    if settings.enableLogging then
         return
     end
     if lastLoggedMessageCategory == category then

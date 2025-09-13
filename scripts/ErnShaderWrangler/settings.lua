@@ -63,7 +63,7 @@ interfaces.Settings.registerGroup {
             renderer = "number",
             name = "stddevName",
             description = "stddevDesc",
-            default = 0.0005,
+            default = 0.005,
             argument = {
                 min = 0,
                 max = 10,

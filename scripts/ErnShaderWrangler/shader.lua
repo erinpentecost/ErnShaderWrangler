@@ -33,10 +33,10 @@ end
 function ShaderFunctions.enable(self, enable)
     if self.enabled ~= enable then
         if enable then
-            print("Enabling " .. self.name)
+            --print("Enabling " .. self.name)
             self.shader:enable()
         else
-            print("Disabling " .. self.name)
+            --print("Disabling " .. self.name)
             self.shader:disable()
         end
         self.enabled = enable

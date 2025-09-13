@@ -66,7 +66,7 @@ function StatsFunctions.add(self, sample)
     addSampleToWindow(self.active, sample)
 
     -- offset adding samples to the other window.
-    if self.currentSampleNumber > self.samplesPerWindow / 2 then
+    if self.currentSampleNumber > self.samplesPerWindow / 3 then
         addSampleToWindow(self.inactive, sample)
     else
         self.currentSampleNumber = self.currentSampleNumber + 1
