@@ -2,6 +2,10 @@
 
 This is an OpenMW mod that will dynamically enable or disable shaders based on FPS performance. It ships with a paired-down tonemap shader that works on GLES devices.
 
+## Configuring Shaders
+
+Specify shaders by providing a comma-separated list of shader names, like this: `bright,smaa`. You can also set *dynamic float* parameters for the shader like this: `bright(ExposureBias=1.2),smaa`. The shader parameter needs `static = false;` to be set in the parameter in order to be controlled like this.
+
 ## Installing
 
 Download the [latest version here](https://github.com/erinpentecost/ErnShaderWrangler/archive/refs/heads/main.zip).
@@ -13,12 +17,9 @@ data="/wherevermymodsare/mods/ErnShaderWrangler-main"
 content=ErnShaderWrangler.omwscripts
 ```
 
-If you're using this mod, you're probably playing OpenMW on a limited-resource device. If so, make these changes to your `settings.cfg`:
+Also, make sure this is set in your `settings.cfg`:
 
 ```ini
 [Post Processing]
 enabled = true
-chain =
 ```
-
-This disables always-on post-processing shaders, but enables post processing to work for dynamically enabled shaders.

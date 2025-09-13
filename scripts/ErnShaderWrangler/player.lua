@@ -29,8 +29,24 @@ local exteriorShaders = {}
 local function loadShaders(nameCSV)
     local out = {}
     for elem in string.gmatch(nameCSV, "[^,]+") do
-        print("Loading shader " .. tostring(elem) .. ".")
-        table.insert(out, shader.NewShader(elem))
+        local parsed = ""
+        local name = ""
+        local parenIndex = string.find(elem, "%(")
+        if parenIndex == nil then
+            name = elem
+            parsed = name
+        else
+            name = string.sub(elem, 1, parenIndex - 1)
+            parsed = name
+        end
+        parsed = parsed .. " with args: "
+        local shaderArgs = {}
+        for k, v in string.gmatch(elem, "([^ (=]+)=([^ =)]+)") do
+            shaderArgs[k] = tonumber(v)
+            parsed = parsed .. k .. " = " .. shaderArgs[k] .. ", "
+        end
+        print("Loading shader " .. parsed)
+        table.insert(out, shader.NewShader(name, shaderArgs))
     end
     return out
 end

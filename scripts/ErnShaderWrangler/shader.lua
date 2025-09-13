@@ -20,11 +20,12 @@ local postprocessing = require('openmw.postprocessing')
 local ShaderFunctions = {}
 ShaderFunctions.__index = ShaderFunctions
 
-function NewShader(name)
+function NewShader(name, args)
     local new = {
         name = name,
         enabled = false,
-        shader = postprocessing.load(name)
+        shader = postprocessing.load(name),
+        args = args
     }
     setmetatable(new, ShaderFunctions)
     return new
@@ -35,6 +36,9 @@ function ShaderFunctions.enable(self, enable)
         if enable then
             --print("Enabling " .. self.name)
             self.shader:enable()
+            for k, v in pairs(self.args) do
+                self.shader:setFloat(k, v)
+            end
         else
             --print("Disabling " .. self.name)
             self.shader:disable()
